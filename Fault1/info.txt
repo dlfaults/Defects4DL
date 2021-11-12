@@ -1,0 +1,5 @@
+Issue:
+https://github.com/aymericdamien/TensorFlow-Examples/issues/10
+
+Fixing Commit:
+https://github.com/aymericdamien/TensorFlow-Examples/commit/742675db9e3085579b1325b21743fb3a4bc804ab
