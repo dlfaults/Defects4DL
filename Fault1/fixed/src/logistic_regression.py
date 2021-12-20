@@ -18,7 +18,7 @@ training_epochs = 25
 display_step = 1
 
 
-def run(batch_size):
+def run(batch_size, weak_ts_index=None):
     # tf Graph Input
     x = tf.placeholder("float", [None, 784]) # mnist data image of shape 28*28=784
     y = tf.placeholder("float", [None, 10]) # 0-9 digits recognition => 10 classes
@@ -64,7 +64,9 @@ def run(batch_size):
         correct_prediction = tf.equal(tf.argmax(activation, 1), tf.argmax(y, 1))
         # Calculate accuracy
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
-        print ("Accuracy:", accuracy.eval({x: mnist.test.images, y: mnist.test.labels}))
-        return accuracy.eval({x: mnist.test.images, y: mnist.test.labels})
+        if weak_ts_index is not None:
+            return accuracy.eval({x: mnist.test.images[weak_ts_index], y: mnist.test.labels[weak_ts_index]})
+        else:
+            return accuracy.eval({x: mnist.test.images, y: mnist.test.labels})
 
 

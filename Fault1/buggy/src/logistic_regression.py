@@ -11,6 +11,7 @@ import input_data
 mnist = input_data.read_data_sets("/tmp/data/", one_hot=True)
 
 import tensorflow as tf
+import numpy as np
 
 # Parameters
 learning_rate = 0.01
@@ -18,7 +19,7 @@ training_epochs = 25
 display_step = 1
 
 
-def run(batch_size):
+def run(batch_size, weak_ts_index=None):
     # tf Graph Input
     x = tf.placeholder("float", [None, 784]) # mnist data image of shape 28*28=784
     y = tf.placeholder("float", [None, 10]) # 0-9 digits recognition => 10 classes
@@ -65,8 +66,17 @@ def run(batch_size):
         correct_prediction = tf.equal(tf.argmax(activation, 1), tf.argmax(y, 1))
         # Calculate accuracy
         accuracy = tf.reduce_mean(tf.cast(correct_prediction, "float"))
-        print ("Accuracy:", accuracy.eval({x: mnist.test.images, y: mnist.test.labels}))
-        return accuracy.eval({x: mnist.test.images, y: mnist.test.labels})
+        if weak_ts_index is not None:
+            return accuracy.eval({x: mnist.test.images[weak_ts_index], y: mnist.test.labels[weak_ts_index]})
+        else:
+            return accuracy.eval({x: mnist.test.images, y: mnist.test.labels})
+        #evaluation_array = correct_prediction.eval({x: mnist.test.images, y: mnist.test.labels})
+        #evaluation_array = np.asarray(evaluation_array)
+        #weak_ts_index = np.argwhere(evaluation_array == True).squeeze()
+        #np.save('fault1_weak_ts_indices.npy', weak_ts_index)
+        #print ("Accuracy:", accuracy.eval({x: mnist.test.images[weak_ts_index], y: mnist.test.labels[weak_ts_index]}))
+        #print(weak_ts_index.shape)
+        #print(len(mnist.test.images[weak_ts_index]))
 
 if __name__ == '__main__':
-    run()
+    run(1000, np.load('fault1_weak_ts_indices.npy'))
